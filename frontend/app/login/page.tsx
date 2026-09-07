@@ -127,6 +127,11 @@ export default function LoginPage() {
               </SpaceBetween>
             </Form>
           </form>
+          <div style={{ marginTop: '20px' }}>
+            <Alert type="info">
+              Demo credentials — Admin: <strong>yash</strong> / <strong>password123</strong> &nbsp;·&nbsp; ReadOnly: <strong>guest</strong> / <strong>guestpass</strong>
+            </Alert>
+          </div>
         </div>
       </Box>
     </div>

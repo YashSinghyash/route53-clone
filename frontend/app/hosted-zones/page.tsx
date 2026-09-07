@@ -107,7 +107,7 @@ export default function HostedZonesPage() {
           columnDefinitions={[
             {
               id: 'name',
-              header: 'Domain name',
+              header: 'Hosted zone name',
               cell: (item) => (
                 <LinkComponent
                   href={`/hosted-zones/${item.id}/records`}
@@ -125,7 +125,12 @@ export default function HostedZonesPage() {
             {
               id: 'type',
               header: 'Type',
-              cell: (item) => (item.private_zone ? 'Private' : 'Public'),
+              cell: (item) => (item.private_zone ? 'Private hosted zone' : 'Public hosted zone'),
+            },
+            {
+              id: 'created_by',
+              header: 'Created by',
+              cell: (item) => item.caller_reference || 'Console',
             },
             {
               id: 'record_count',
@@ -136,6 +141,11 @@ export default function HostedZonesPage() {
               id: 'comment',
               header: 'Description',
               cell: (item) => item.comment || '-',
+            },
+            {
+              id: 'id',
+              header: 'Hosted zone ID',
+              cell: (item) => item.id,
             },
           ]}
           items={zones}
@@ -149,8 +159,25 @@ export default function HostedZonesPage() {
             <Header
               variant="h1"
               counter={`(${totalCount})`}
+              description={
+                <span>
+                  Automatic mode is the current search behavior optimized for best filter results.{' '}
+                  <LinkComponent variant="primary" href="#">To change modes go to settings.</LinkComponent>
+                </span>
+              }
               actions={
                 <SpaceBetween direction="horizontal" size="xs">
+                  <Button
+                    iconName="refresh"
+                    onClick={fetchZones}
+                    ariaLabel="Refresh hosted zones"
+                  />
+                  <Button
+                    disabled={!selectedZone}
+                    onClick={() => selectedZone && router.push(`/hosted-zones/${selectedZone.id}/records`)}
+                  >
+                    View details
+                  </Button>
                   <Button
                     disabled={!selectedZone}
                     onClick={() => setEditingZone(selectedZone)}
@@ -178,7 +205,7 @@ export default function HostedZonesPage() {
           filter={
             <TextFilter
               filteringText={filterText}
-              filteringPlaceholder="Find hosted zones"
+              filteringPlaceholder="Filter records by property or value"
               onChange={({ detail }) => {
                 setFilterText(detail.filteringText);
                 setCurrentPage(1);
@@ -192,12 +219,15 @@ export default function HostedZonesPage() {
               onChange={({ detail }) => setCurrentPage(detail.currentPageIndex)}
             />
           }
+          preferences={
+            <Button iconName="settings" variant="icon" ariaLabel="Preferences" />
+          }
           empty={
             <Box textAlign="center" color="inherit">
               <SpaceBetween size="m">
-                <b>You don&apos;t have any hosted zones.</b>
+                <b>No hosted zones</b>
                 <Box variant="p" color="inherit">
-                  A hosted zone contains DNS records that tell Route 53 how to route traffic for a domain.
+                  There are no hosted zones created for this account.
                 </Box>
                 <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
                   Create hosted zone

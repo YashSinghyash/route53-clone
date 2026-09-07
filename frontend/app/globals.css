@@ -1,13 +1,28 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-background-button-primary-default: #ec7211;
+  --color-background-button-primary-hover: #eb5f07;
+  --color-background-button-primary-active: #dd5200;
+  --color-border-button-primary-default: #ec7211;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Override Cloudscape primary buttons to AWS Signature Orange */
+button[class*="awsui_button"][class*="awsui_variant-primary"],
+button[data-variant="primary"],
+.awsui-button-variant-primary {
+  background-color: #ec7211 !important;
+  border-color: #ec7211 !important;
+  color: #ffffff !important;
+}
+
+button[class*="awsui_button"][class*="awsui_variant-primary"]:hover,
+button[data-variant="primary"]:hover {
+  background-color: #eb5f07 !important;
+  border-color: #eb5f07 !important;
+}
+
+button[class*="awsui_button"][class*="awsui_variant-primary"]:active {
+  background-color: #dd5200 !important;
+  border-color: #dd5200 !important;
 }
 
 html {
@@ -24,9 +39,6 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -40,10 +52,4 @@ body {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }

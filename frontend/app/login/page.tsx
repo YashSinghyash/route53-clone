@@ -89,7 +89,14 @@ export default function LoginPage() {
                   </Button>
                 </SpaceBetween>
               }
-              header={<Header variant="h1">Sign in to Route 53 Console</Header>}
+              header={
+                <Header
+                  variant="h1"
+                  description="Enter your IAM user credentials to access Amazon Route 53 Management Console."
+                >
+                  Sign in
+                </Header>
+              }
             >
               <SpaceBetween size="l">
                 {error && (
@@ -97,13 +104,13 @@ export default function LoginPage() {
                     {error}
                   </Alert>
                 )}
-                <Container header={<Header variant="h2">Account Credentials</Header>}>
+                <Container header={<Header variant="h2">AWS Account Credentials</Header>}>
                   <SpaceBetween size="m">
-                    <FormField label="Username">
+                    <FormField label="Username" description="IAM user or account administrator name">
                       <Input
                         value={username}
                         onChange={({ detail }) => setUsername(detail.value)}
-                        placeholder="Enter your username"
+                        placeholder="e.g. yash"
                         autoComplete={false}
                       />
                     </FormField>

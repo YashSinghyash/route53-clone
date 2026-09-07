@@ -29,7 +29,6 @@ export default function HostedZonesPage() {
   const pageSize = 10;
 
   // Modals state
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [editingZone, setEditingZone] = useState<HostedZone | null>(null);
   const [deletingZone, setDeletingZone] = useState<HostedZone | null>(null);
 
@@ -64,15 +63,12 @@ export default function HostedZonesPage() {
     fetchZones();
   }, [fetchZones]);
 
-  const handleCreateSuccess = (zone: HostedZone, isEdit: boolean) => {
-    setIsCreateModalOpen(false);
+  const handleEditSuccess = (zone: HostedZone) => {
     setEditingZone(null);
     setSelectedItems([]);
     addNotification({
       type: 'success',
-      content: isEdit
-        ? `Successfully updated hosted zone ${zone.name}.`
-        : `Successfully created hosted zone ${zone.name}.`,
+      content: `Successfully updated hosted zone ${zone.name}.`,
     });
     fetchZones();
   };
@@ -192,7 +188,7 @@ export default function HostedZonesPage() {
                   </Button>
                   <Button
                     variant="primary"
-                    onClick={() => setIsCreateModalOpen(true)}
+                    onClick={() => router.push('/hosted-zones/create')}
                   >
                     Create hosted zone
                   </Button>
@@ -229,7 +225,7 @@ export default function HostedZonesPage() {
                 <Box variant="p" color="inherit">
                   There are no hosted zones created for this account.
                 </Box>
-                <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+                <Button variant="primary" onClick={() => router.push('/hosted-zones/create')}>
                   Create hosted zone
                 </Button>
               </SpaceBetween>
@@ -238,16 +234,13 @@ export default function HostedZonesPage() {
         />
       </SpaceBetween>
 
-      {/* Create / Edit Modal */}
-      {(isCreateModalOpen || editingZone) && (
+      {/* Edit Modal (Edit mode only) */}
+      {editingZone && (
         <HostedZoneModal
-          visible={isCreateModalOpen || !!editingZone}
+          visible={!!editingZone}
           zone={editingZone}
-          onDismiss={() => {
-            setIsCreateModalOpen(false);
-            setEditingZone(null);
-          }}
-          onSuccess={handleCreateSuccess}
+          onDismiss={() => setEditingZone(null)}
+          onSuccess={handleEditSuccess}
         />
       )}
 

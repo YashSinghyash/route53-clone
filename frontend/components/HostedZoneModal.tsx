@@ -17,7 +17,7 @@ interface HostedZoneModalProps {
   visible: boolean;
   zone: HostedZone | null;
   onDismiss: () => void;
-  onSuccess: (zone: HostedZone, isEdit: boolean) => void;
+  onSuccess: (zone: HostedZone) => void;
 }
 
 export default function HostedZoneModal({
@@ -26,61 +26,37 @@ export default function HostedZoneModal({
   onDismiss,
   onSuccess,
 }: HostedZoneModalProps) {
-  const isEdit = !!zone;
-  const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-  const [zoneType, setZoneType] = useState<'public' | 'private'>('public');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (zone) {
-      setName(zone.name);
       setComment(zone.comment || '');
-      setZoneType(zone.private_zone ? 'private' : 'public');
-    } else {
-      setName('');
-      setComment('');
-      setZoneType('public');
     }
     setError(null);
   }, [zone, visible]);
 
-  const handleSubmit = async () => {
-    if (!isEdit && !name.trim()) {
-      setError('Domain name is required.');
-      return;
-    }
+  if (!zone) return null;
 
+  const handleSubmit = async () => {
     setError(null);
     setIsSubmitting(true);
 
     try {
-      if (isEdit && zone) {
-        const updated = await apiFetch<HostedZone>(`/api/hosted-zones/${zone.id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            comment: comment.trim(),
-            private_zone: zoneType === 'private',
-          }),
-        });
-        onSuccess(updated, true);
-      } else {
-        const created = await apiFetch<HostedZone>('/api/hosted-zones', {
-          method: 'POST',
-          body: JSON.stringify({
-            name: name.trim(),
-            comment: comment.trim(),
-            private_zone: zoneType === 'private',
-          }),
-        });
-        onSuccess(created, false);
-      }
+      const updated = await apiFetch<HostedZone>(`/api/hosted-zones/${zone.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          comment: comment.trim(),
+          private_zone: zone.private_zone,
+        }),
+      });
+      onSuccess(updated);
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || 'Failed to save hosted zone.');
+        setError(err.message || 'Failed to update hosted zone.');
       } else {
-        setError('Failed to save hosted zone.');
+        setError('Failed to update hosted zone.');
       }
     } finally {
       setIsSubmitting(false);
@@ -91,7 +67,7 @@ export default function HostedZoneModal({
     <Modal
       visible={visible}
       onDismiss={onDismiss}
-      header={isEdit ? `Edit hosted zone ${zone?.name}` : 'Create hosted zone'}
+      header={`Edit hosted zone ${zone.name}`}
       footer={
         <Box float="right">
           <SpaceBetween direction="horizontal" size="xs">
@@ -99,7 +75,7 @@ export default function HostedZoneModal({
               Cancel
             </Button>
             <Button variant="primary" onClick={handleSubmit} loading={isSubmitting}>
-              {isEdit ? 'Save changes' : 'Create hosted zone'}
+              Save changes
             </Button>
           </SpaceBetween>
         </Box>
@@ -115,14 +91,9 @@ export default function HostedZoneModal({
 
           <FormField
             label="Domain name"
-            description="The name of the domain for which you want Route 53 to route traffic. For example: example.com."
+            description="The name of the domain for which Route 53 routes traffic."
           >
-            <Input
-              value={name}
-              onChange={({ detail }) => setName(detail.value)}
-              placeholder="example.com"
-              disabled={isEdit}
-            />
+            <Input value={zone.name} disabled />
           </FormField>
 
           <FormField
@@ -139,23 +110,22 @@ export default function HostedZoneModal({
 
           <FormField
             label="Type"
-            description="Specify whether you want to route traffic on the internet or in an Amazon VPC."
+            description="Hosted zone type is immutable."
           >
             <RadioGroup
-              value={zoneType}
-              onChange={({ detail }) => setZoneType(detail.value as 'public' | 'private')}
+              value={zone.private_zone ? 'private' : 'public'}
               items={[
                 {
                   value: 'public',
                   label: 'Public hosted zone',
                   description: 'Routes traffic on the internet.',
-                  disabled: isEdit,
+                  disabled: true,
                 },
                 {
                   value: 'private',
                   label: 'Private hosted zone',
                   description: 'Routes traffic within an Amazon VPC.',
-                  disabled: isEdit,
+                  disabled: true,
                 },
               ]}
             />

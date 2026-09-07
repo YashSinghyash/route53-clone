@@ -1,0 +1,24 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Node / Next.js
+node_modules/
+.next/
+.env.local
+
+# SQLite
+*.db
+*.sqlite3
+
+# AI tool configs / caches
+.claude/
+.antigravity/
+.cursor/
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db

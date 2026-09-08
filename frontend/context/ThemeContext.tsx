@@ -6,33 +6,38 @@ import { applyMode, Mode } from '@cloudscape-design/global-styles';
 interface ThemeContextType {
   mode: 'light' | 'dark';
   toggleTheme: () => void;
+  setMode: (mode: 'light' | 'dark') => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mode, setModeState] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const savedMode = localStorage.getItem('theme') as 'light' | 'dark' | null;
     if (savedMode === 'dark') {
-      setMode('dark');
+      setModeState('dark');
       applyMode(Mode.Dark);
     } else {
-      setMode('light');
+      setModeState('light');
       applyMode(Mode.Light);
     }
   }, []);
 
+  const setMode = (newMode: 'light' | 'dark') => {
+    setModeState(newMode);
+    localStorage.setItem('theme', newMode);
+    applyMode(newMode === 'dark' ? Mode.Dark : Mode.Light);
+  };
+
   const toggleTheme = () => {
     const nextMode = mode === 'light' ? 'dark' : 'light';
     setMode(nextMode);
-    localStorage.setItem('theme', nextMode);
-    applyMode(nextMode === 'dark' ? Mode.Dark : Mode.Light);
   };
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleTheme }}>
+    <ThemeContext.Provider value={{ mode, toggleTheme, setMode }}>
       {children}
     </ThemeContext.Provider>
   );

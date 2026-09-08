@@ -242,12 +242,14 @@ export default function HostedZonesPage() {
                   />
                   <Button
                     disabled={!selectedZone}
+                    disabledReason={!selectedZone ? 'Select a hosted zone to view details.' : undefined}
                     onClick={() => selectedZone && router.push(`/hosted-zones/${selectedZone.id}/records`)}
                   >
                     View details
                   </Button>
                   <ButtonDropdown
                     disabled={!selectedZone}
+                    disabledReason={!selectedZone ? 'Select a hosted zone to export.' : undefined}
                     items={[
                       { id: 'json', text: 'Export as JSON' },
                       { id: 'bind', text: 'Export as BIND zone file' },
@@ -262,14 +264,14 @@ export default function HostedZonesPage() {
                   </ButtonDropdown>
                   <Button
                     disabled={isReadOnly || !selectedZone}
-                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : !selectedZone ? 'Select a hosted zone to edit.' : undefined}
                     onClick={() => setEditingZone(selectedZone)}
                   >
                     Edit
                   </Button>
                   <Button
                     disabled={isReadOnly || !selectedZone}
-                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : !selectedZone ? 'Select a hosted zone to delete.' : undefined}
                     onClick={() => setDeletingZone(selectedZone)}
                   >
                     Delete

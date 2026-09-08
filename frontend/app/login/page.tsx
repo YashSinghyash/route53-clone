@@ -11,6 +11,7 @@ import Button from '@cloudscape-design/components/button';
 import Flashbar from '@cloudscape-design/components/flashbar';
 import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -19,9 +20,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [highlightDemoTiles, setHighlightDemoTiles] = useState(false);
+
   const { login, isAuthenticated, isLoading } = useAuth();
   const { addNotification, clearNotifications, notifications } = useNotification();
+  const { mode, toggleTheme } = useTheme();
   const router = useRouter();
+
+  const isDark = mode === 'dark';
 
   const notifyNotImplemented = (_itemName?: string) => {
     addNotification({
@@ -99,7 +104,7 @@ export default function LoginPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: isDark ? '#0f1b2a' : '#ffffff' }}>
         <Spinner size="large" />
       </div>
     );
@@ -109,16 +114,25 @@ export default function LoginPage() {
     return null;
   }
 
+  const primaryBlue = isDark ? '#539fe5' : '#0972d3';
+  const textColorPrimary = isDark ? '#ffffff' : '#16191f';
+  const textColorSecondary = isDark ? '#aab7c4' : '#545b64';
+  const cardBg = isDark ? '#16191f' : '#ffffff';
+  const cardBorder = isDark ? '1px solid #414d5c' : '1px solid #d5dbdb';
+  const pageBg = isDark ? '#0f1b2a' : '#ffffff';
+
   return (
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#ffffff',
+        backgroundColor: pageBg,
+        color: textColorPrimary,
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
         overflowX: 'hidden',
         fontFamily: '"Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif',
+        transition: 'background-color 0.2s ease, color 0.2s ease',
       }}
     >
       {/* Background Isometric Cube Watermarks */}
@@ -131,16 +145,16 @@ export default function LoginPage() {
           zIndex: 0,
         }}
       >
-        <svg width="260" height="300" viewBox="0 0 240 280" fill="none" opacity="0.08" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 0L120 35V105L60 70V0Z" fill="#D5DBDB" stroke="#879596" />
-          <path d="M60 0L0 35V105L60 70V0Z" fill="#EAECEE" stroke="#879596" />
-          <path d="M60 70L120 105L60 140L0 105L60 70Z" fill="#BDC3C7" stroke="#879596" />
-          <path d="M180 70L240 105V175L180 140V70Z" fill="#D5DBDB" stroke="#879596" />
-          <path d="M180 70L120 105V175L180 140V70Z" fill="#EAECEE" stroke="#879596" />
-          <path d="M180 140L240 175L180 210L120 175L180 140Z" fill="#BDC3C7" stroke="#879596" />
-          <path d="M60 140L120 175V245L60 210V140Z" fill="#D5DBDB" stroke="#879596" />
-          <path d="M60 140L0 175V245L60 210V140Z" fill="#EAECEE" stroke="#879596" />
-          <path d="M60 210L120 245L60 280L0 245L60 210Z" fill="#BDC3C7" stroke="#879596" />
+        <svg width="260" height="300" viewBox="0 0 240 280" fill="none" opacity={isDark ? '0.12' : '0.08'} xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 0L120 35V105L60 70V0Z" fill={isDark ? '#2e3846' : '#D5DBDB'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 0L0 35V105L60 70V0Z" fill={isDark ? '#1f2a37' : '#EAECEE'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 70L120 105L60 140L0 105L60 70Z" fill={isDark ? '#374151' : '#BDC3C7'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M180 70L240 105V175L180 140V70Z" fill={isDark ? '#2e3846' : '#D5DBDB'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M180 70L120 105V175L180 140V70Z" fill={isDark ? '#1f2a37' : '#EAECEE'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M180 140L240 175L180 210L120 175L180 140Z" fill={isDark ? '#374151' : '#BDC3C7'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 140L120 175V245L60 210V140Z" fill={isDark ? '#2e3846' : '#D5DBDB'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 140L0 175V245L60 210V140Z" fill={isDark ? '#1f2a37' : '#EAECEE'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 210L120 245L60 280L0 245L60 210Z" fill={isDark ? '#374151' : '#BDC3C7'} stroke={isDark ? '#414d5c' : '#879596'} />
         </svg>
       </div>
 
@@ -153,16 +167,16 @@ export default function LoginPage() {
           zIndex: 0,
         }}
       >
-        <svg width="260" height="300" viewBox="0 0 240 280" fill="none" opacity="0.08" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 0L120 35V105L60 70V0Z" fill="#D5DBDB" stroke="#879596" />
-          <path d="M60 0L0 35V105L60 70V0Z" fill="#EAECEE" stroke="#879596" />
-          <path d="M60 70L120 105L60 140L0 105L60 70Z" fill="#BDC3C7" stroke="#879596" />
-          <path d="M180 70L240 105V175L180 140V70Z" fill="#D5DBDB" stroke="#879596" />
-          <path d="M180 70L120 105V175L180 140V70Z" fill="#EAECEE" stroke="#879596" />
-          <path d="M180 140L240 175L180 210L120 175L180 140Z" fill="#BDC3C7" stroke="#879596" />
-          <path d="M60 140L120 175V245L60 210V140Z" fill="#D5DBDB" stroke="#879596" />
-          <path d="M60 140L0 175V245L60 210V140Z" fill="#EAECEE" stroke="#879596" />
-          <path d="M60 210L120 245L60 280L0 245L60 210Z" fill="#BDC3C7" stroke="#879596" />
+        <svg width="260" height="300" viewBox="0 0 240 280" fill="none" opacity={isDark ? '0.12' : '0.08'} xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 0L120 35V105L60 70V0Z" fill={isDark ? '#2e3846' : '#D5DBDB'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 0L0 35V105L60 70V0Z" fill={isDark ? '#1f2a37' : '#EAECEE'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 70L120 105L60 140L0 105L60 70Z" fill={isDark ? '#374151' : '#BDC3C7'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M180 70L240 105V175L180 140V70Z" fill={isDark ? '#2e3846' : '#D5DBDB'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M180 70L120 105V175L180 140V70Z" fill={isDark ? '#1f2a37' : '#EAECEE'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M180 140L240 175L180 210L120 175L180 140Z" fill={isDark ? '#374151' : '#BDC3C7'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 140L120 175V245L60 210V140Z" fill={isDark ? '#2e3846' : '#D5DBDB'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 140L0 175V245L60 210V140Z" fill={isDark ? '#1f2a37' : '#EAECEE'} stroke={isDark ? '#414d5c' : '#879596'} />
+          <path d="M60 210L120 245L60 280L0 245L60 210Z" fill={isDark ? '#374151' : '#BDC3C7'} stroke={isDark ? '#414d5c' : '#879596'} />
         </svg>
       </div>
 
@@ -175,25 +189,50 @@ export default function LoginPage() {
           gap: '24px',
           padding: '14px 28px',
           fontSize: '12px',
-          color: '#0972d3',
+          color: primaryBlue,
           zIndex: 1,
         }}
       >
         <span onClick={() => notifyNotImplemented('Provide feedback')} style={{ cursor: 'pointer' }}>Provide feedback</span>
-        <span onClick={() => notifyNotImplemented('Multi-session options')} style={{ color: '#16191f', cursor: 'pointer' }}>
+        <span onClick={() => notifyNotImplemented('Multi-session options')} style={{ color: textColorPrimary, cursor: 'pointer' }}>
           Multi-session disabled <span style={{ fontSize: '9px' }}>▼</span>
         </span>
-        <span onClick={() => notifyNotImplemented('Language selector')} style={{ color: '#16191f', cursor: 'pointer' }}>
+        <span onClick={() => notifyNotImplemented('Language selector')} style={{ color: textColorPrimary, cursor: 'pointer' }}>
           English <span style={{ fontSize: '9px' }}>▼</span>
         </span>
+        <Button
+          variant="normal"
+          onClick={toggleTheme}
+          iconSvg={
+            isDark ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0972d3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            )
+          }
+        >
+          {isDark ? 'Dark mode' : 'Light mode'}
+        </Button>
       </header>
 
       {/* Centered Logo */}
       <div style={{ textAlign: 'center', margin: '10px 0 24px 0', zIndex: 1 }}>
         <img
-          src="/aws-login-logo.png"
+          src={isDark ? '/aws-header-logo.png' : '/aws-login-logo.png'}
           alt="AWS Logo"
-          style={{ width: '72px', height: 'auto', display: 'inline-block' }}
+          style={{ width: isDark ? '64px' : '72px', height: 'auto', display: 'inline-block' }}
         />
       </div>
 
@@ -202,15 +241,16 @@ export default function LoginPage() {
         <div style={{ maxWidth: '440px', width: '100%' }}>
           <div
             style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #d5dbdb',
+              backgroundColor: cardBg,
+              border: cardBorder,
               borderRadius: '8px',
               padding: '32px 36px',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+              boxShadow: isDark ? '0 4px 20px rgba(0, 0, 0, 0.4)' : '0 2px 10px rgba(0, 0, 0, 0.05)',
+              transition: 'background-color 0.2s ease, border-color 0.2s ease',
             }}
           >
-            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#16191f', margin: '0 0 4px 0' }}>Sign In</h1>
-            <p style={{ fontSize: '13px', color: '#545b64', margin: '0 0 20px 0' }}>Access your AWS account by user credentials.</p>
+            <h1 style={{ fontSize: '22px', fontWeight: 700, color: textColorPrimary, margin: '0 0 4px 0' }}>Sign In</h1>
+            <p style={{ fontSize: '13px', color: textColorSecondary, margin: '0 0 20px 0' }}>Access your AWS account by user credentials.</p>
 
             {notifications.length > 0 && (
               <div style={{ marginBottom: '16px' }}>
@@ -259,9 +299,11 @@ export default function LoginPage() {
                     padding: '2px',
                     transition: 'all 0.3s ease-in-out',
                     boxShadow: highlightDemoTiles
-                      ? '0 0 0 3px rgba(9, 114, 211, 0.4), 0 2px 10px rgba(9, 114, 211, 0.25)'
+                      ? isDark
+                        ? '0 0 0 3px rgba(83, 159, 229, 0.5), 0 2px 10px rgba(83, 159, 229, 0.3)'
+                        : '0 0 0 3px rgba(9, 114, 211, 0.4), 0 2px 10px rgba(9, 114, 211, 0.25)'
                       : 'none',
-                    border: highlightDemoTiles ? '1px solid #0972d3' : '1px solid transparent',
+                    border: highlightDemoTiles ? `1px solid ${primaryBlue}` : '1px solid transparent',
                   }}
                 >
                   <Tiles
@@ -320,25 +362,25 @@ export default function LoginPage() {
                   style={{
                     width: '100%',
                     height: '38px',
-                    backgroundColor: '#ffffff',
-                    border: '1px solid rgb(0, 108, 224)',
+                    backgroundColor: cardBg,
+                    border: `1px solid ${primaryBlue}`,
                     borderRadius: '20px',
-                    color: 'rgb(0, 108, 224)',
+                    color: primaryBlue,
                     fontSize: '14px',
                     fontWeight: 700,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: 'background-color 0.15s ease, border-color 0.15s ease',
+                    transition: 'background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 108, 224, 0.05)';
-                    e.currentTarget.style.borderColor = 'rgb(0, 108, 224)';
+                    e.currentTarget.style.backgroundColor = isDark ? 'rgba(83, 159, 229, 0.15)' : 'rgba(0, 108, 224, 0.05)';
+                    e.currentTarget.style.borderColor = primaryBlue;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#ffffff';
-                    e.currentTarget.style.borderColor = 'rgb(0, 108, 224)';
+                    e.currentTarget.style.backgroundColor = cardBg;
+                    e.currentTarget.style.borderColor = primaryBlue;
                   }}
                 >
                   New to AWS? Sign up
@@ -348,8 +390,8 @@ export default function LoginPage() {
           </div>
 
           {/* Muted Footer Agreement below Single Card */}
-          <div style={{ marginTop: '16px', fontSize: '11px', color: '#545b64', lineHeight: '1.4', textAlign: 'center' }}>
-            By continuing, you agree to the <span onClick={() => notifyNotImplemented('AWS Customer Agreement')} style={{ color: '#0972d3', cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span onClick={() => notifyNotImplemented('Privacy Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span onClick={() => notifyNotImplemented('Cookie Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Cookie Notice</span> for more information.
+          <div style={{ marginTop: '16px', fontSize: '11px', color: textColorSecondary, lineHeight: '1.4', textAlign: 'center' }}>
+            By continuing, you agree to the <span onClick={() => notifyNotImplemented('AWS Customer Agreement')} style={{ color: primaryBlue, cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span onClick={() => notifyNotImplemented('Privacy Notice')} style={{ color: primaryBlue, cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span onClick={() => notifyNotImplemented('Cookie Notice')} style={{ color: primaryBlue, cursor: 'pointer' }}>Cookie Notice</span> for more information.
           </div>
         </div>
       </main>

@@ -203,73 +203,8 @@ function HeaderNav() {
         </div>
       </div>
 
-      {/* Right side: Account & Utilities */}
+      {/* Right side: Utilities, Dark mode, Account & Global */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        {/* User Account Dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-            style={{
-              background: '#1c2838',
-              border: '1px solid #384556',
-              borderRadius: '4px',
-              color: '#ffffff',
-              fontSize: '13px',
-              fontWeight: 500,
-              padding: '4px 10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-            }}
-          >
-            <span>{`${displayName} (${accountId})`}</span>
-            <span style={{ fontSize: '10px', color: '#aab7c4' }}>▼</span>
-          </button>
-          {accountMenuOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '100%',
-                right: 0,
-                marginTop: '4px',
-                backgroundColor: '#16191f',
-                border: '1px solid #414d5c',
-                borderRadius: '4px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                zIndex: 1001,
-                minWidth: '230px',
-                padding: '8px 0',
-              }}
-            >
-              <div style={{ padding: '8px 16px', borderBottom: '1px solid #2e3846', color: '#eaedd1', fontSize: '14px' }}>
-                <strong style={{ color: '#ffffff' }}>{displayName}</strong>
-                <div style={{ fontSize: '12px', color: '#9ba7b6', marginTop: '2px' }}>AWS Account: {accountId}</div>
-              </div>
-              <button
-                onClick={() => {
-                  setAccountMenuOpen(false);
-                  logout();
-                }}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 16px',
-                  background: 'none',
-                  border: 'none',
-                  color: '#ffffff',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#232f3e')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-              >
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
-
         {/* CloudShell button */}
         <div
           title="CloudShell"
@@ -436,6 +371,74 @@ function HeaderNav() {
               }}
             >
               Route 53 is a Global Service.
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
+
+        {/* User Account Dropdown (Rightmost) */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+            style={{
+              background: '#1c2838',
+              border: '1px solid #384556',
+              borderRadius: '4px',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 500,
+              padding: '4px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            <span>{`${displayName} (${accountId})`}</span>
+            <span style={{ fontSize: '10px', color: '#aab7c4' }}>▼</span>
+          </button>
+          {accountMenuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                marginTop: '4px',
+                backgroundColor: '#16191f',
+                border: '1px solid #414d5c',
+                borderRadius: '4px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                zIndex: 1001,
+                minWidth: '230px',
+                padding: '8px 0',
+              }}
+            >
+              <div style={{ padding: '8px 16px', borderBottom: '1px solid #2e3846', color: '#eaedd1', fontSize: '14px' }}>
+                <strong style={{ color: '#ffffff' }}>{displayName}</strong>
+                <div style={{ fontSize: '12px', color: '#9ba7b6', marginTop: '2px' }}>AWS Account: {accountId}</div>
+              </div>
+              <button
+                onClick={() => {
+                  setAccountMenuOpen(false);
+                  logout();
+                }}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '8px 16px',
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#232f3e')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                Sign out
+              </button>
             </div>
           )}
         </div>

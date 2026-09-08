@@ -6,12 +6,15 @@ import FormField from '@cloudscape-design/components/form-field';
 import Input from '@cloudscape-design/components/input';
 import Alert from '@cloudscape-design/components/alert';
 import Spinner from '@cloudscape-design/components/spinner';
+import Tiles from '@cloudscape-design/components/tiles';
+import Button from '@cloudscape-design/components/button';
 import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated, isLoading } = useAuth();
@@ -157,7 +160,7 @@ export default function LoginPage() {
       </header>
 
       {/* Centered Logo */}
-      <div style={{ textAlign: 'center', margin: '10px 0 30px 0', zIndex: 1 }}>
+      <div style={{ textAlign: 'center', margin: '10px 0 24px 0', zIndex: 1 }}>
         <img
           src="/aws-login-logo.png"
           alt="AWS Logo"
@@ -165,179 +168,112 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Main Form & Demo Card Split Container */}
+      {/* Main Single Centered Sign In Form Container */}
       <main style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '0 20px 40px 20px', zIndex: 1 }}>
-        <div style={{ display: 'flex', gap: '28px', maxWidth: '860px', width: '100%', alignItems: 'stretch' }}>
-          
-          {/* LEFT SIDE: Sign In Card */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #d5dbdb',
-                borderRadius: '8px',
-                padding: '32px 36px',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
-                flex: 1,
-              }}
-            >
-              <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#16191f', margin: '0 0 4px 0' }}>Sign In</h1>
-              <p style={{ fontSize: '13px', color: '#545b64', margin: '0 0 24px 0' }}>Access your AWS account by user credentials.</p>
+        <div style={{ maxWidth: '440px', width: '100%' }}>
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #d5dbdb',
+              borderRadius: '8px',
+              padding: '32px 36px',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+            }}
+          >
+            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#16191f', margin: '0 0 4px 0' }}>Sign In</h1>
+            <p style={{ fontSize: '13px', color: '#545b64', margin: '0 0 20px 0' }}>Access your AWS account by user credentials.</p>
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                {error && (
-                  <Alert type="error" dismissible onDismiss={() => setError(null)}>
-                    {error}
-                  </Alert>
-                )}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              {error && (
+                <Alert type="error" dismissible onDismiss={() => setError(null)}>
+                  {error}
+                </Alert>
+              )}
 
-                <FormField label="Username">
-                  <Input
-                    value={username}
-                    onChange={({ detail }) => setUsername(detail.value)}
-                    placeholder="Enter your username"
-                  />
-                </FormField>
+              <FormField label="Username">
+                <Input
+                  value={username}
+                  onChange={({ detail }) => setUsername(detail.value)}
+                  placeholder="Enter your username"
+                />
+              </FormField>
 
-                <FormField label="Password">
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={({ detail }) => setPassword(detail.value)}
-                    placeholder="Enter your password"
-                  />
-                </FormField>
+              <FormField label="Password">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={({ detail }) => setPassword(detail.value)}
+                  placeholder="Enter your password"
+                  suffix={
+                    <Button
+                      variant="inline-icon"
+                      formAction="none"
+                      ariaLabel={showPassword ? 'Hide password' : 'Show password'}
+                      iconName={showPassword ? 'unlocked' : 'lock-private'}
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  }
+                />
+              </FormField>
 
-                <div style={{ marginTop: '10px' }}>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    style={{
-                      width: '100%',
-                      height: '38px',
-                      backgroundColor: '#ec7211',
-                      backgroundImage: 'linear-gradient(to bottom, #ff9900, #ec7211)',
-                      border: '1px solid #d58200',
-                      borderRadius: '20px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                      transition: 'background-color 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#eb5f07')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ec7211')}
-                  >
-                    {isSubmitting ? <Spinner size="normal" /> : 'Sign in'}
-                  </button>
-                </div>
-              </form>
-            </div>
+              {/* Demo Accounts Quick-Select Tiles */}
+              <FormField label="Demo accounts:">
+                <Tiles
+                  columns={2}
+                  value={username === 'yash' ? 'admin' : username === 'guest' ? 'readonly' : null}
+                  onChange={({ detail }) => {
+                    if (detail.value === 'admin') fillAdminCredentials();
+                    if (detail.value === 'readonly') fillReadOnlyCredentials();
+                  }}
+                  items={[
+                    {
+                      value: 'admin',
+                      label: 'Admin',
+                      description: 'yash / full access',
+                    },
+                    {
+                      value: 'readonly',
+                      label: 'ReadOnly',
+                      description: 'guest / view only',
+                    },
+                  ]}
+                />
+              </FormField>
 
-            {/* Muted Footer Agreement below Left Card */}
-            <div style={{ marginTop: '16px', fontSize: '11px', color: '#545b64', lineHeight: '1.4', textAlign: 'left' }}>
-              By continuing, you agree to the <span onClick={() => notifyNotImplemented('AWS Customer Agreement')} style={{ color: '#0972d3', cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span onClick={() => notifyNotImplemented('Privacy Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span onClick={() => notifyNotImplemented('Cookie Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Cookie Notice</span> for more information.
-            </div>
+              <div style={{ marginTop: '6px' }}>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  style={{
+                    width: '100%',
+                    height: '38px',
+                    backgroundColor: '#ec7211',
+                    backgroundImage: 'linear-gradient(to bottom, #ff9900, #ec7211)',
+                    border: '1px solid #d58200',
+                    borderRadius: '20px',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    transition: 'background-color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#eb5f07')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ec7211')}
+                >
+                  {isSubmitting ? <Spinner size="normal" /> : 'Sign in'}
+                </button>
+              </div>
+            </form>
           </div>
 
-          {/* RIGHT SIDE: Demo Credentials Dark Card (replaces Lightsail promo banner) */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div
-              style={{
-                backgroundColor: '#0f1b2a',
-                border: '1px solid #2e3846',
-                borderRadius: '8px',
-                padding: '28px 32px',
-                color: '#ffffff',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                flex: 1,
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', margin: 0 }}>Demo Credentials</h2>
-                  <span style={{ fontSize: '10px', backgroundColor: '#1d2c3f', color: '#38bdf8', padding: '2px 8px', borderRadius: '10px', border: '1px solid #334155', fontWeight: 600 }}>
-                    MOCKED AUTH
-                  </span>
-                </div>
-                <p style={{ fontSize: '12px', color: '#9ba7b6', margin: '0 0 20px 0', lineHeight: '1.4' }}>
-                  Use these pre-configured assignment credentials to evaluate admin & read-only console capabilities:
-                </p>
-
-                {/* Admin Box */}
-                <div style={{ backgroundColor: '#162232', border: '1px solid #334155', borderRadius: '6px', padding: '14px', marginBottom: '14px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 700, backgroundColor: '#ec7211', color: '#ffffff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
-                      Admin Role
-                    </span>
-                    <button
-                      onClick={fillAdminCredentials}
-                      style={{
-                        background: '#1d2c3f',
-                        border: '1px solid #384556',
-                        color: '#38bdf8',
-                        fontSize: '11px',
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#23354d')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1d2c3f')}
-                    >
-                      Auto-fill Admin
-                    </button>
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#e2e8f0', fontFamily: 'monospace' }}>
-                    <div><strong>Username:</strong> yash</div>
-                    <div><strong>Password:</strong> password123</div>
-                  </div>
-                </div>
-
-                {/* ReadOnly Box */}
-                <div style={{ backgroundColor: '#162232', border: '1px solid #334155', borderRadius: '6px', padding: '14px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 700, backgroundColor: '#0972d3', color: '#ffffff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
-                      ReadOnly Role
-                    </span>
-                    <button
-                      onClick={fillReadOnlyCredentials}
-                      style={{
-                        background: '#1d2c3f',
-                        border: '1px solid #384556',
-                        color: '#38bdf8',
-                        fontSize: '11px',
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#23354d')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1d2c3f')}
-                    >
-                      Auto-fill ReadOnly
-                    </button>
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#e2e8f0', fontFamily: 'monospace' }}>
-                    <div><strong>Username:</strong> guest</div>
-                    <div><strong>Password:</strong> guestpass</div>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '20px', borderTop: '1px solid #1e293b', paddingTop: '12px' }}>
-                💡 Click any &quot;Auto-fill&quot; button to instantly populate the sign-in form.
-              </div>
-            </div>
+          {/* Muted Footer Agreement below Single Card */}
+          <div style={{ marginTop: '16px', fontSize: '11px', color: '#545b64', lineHeight: '1.4', textAlign: 'center' }}>
+            By continuing, you agree to the <span onClick={() => notifyNotImplemented('AWS Customer Agreement')} style={{ color: '#0972d3', cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span onClick={() => notifyNotImplemented('Privacy Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span onClick={() => notifyNotImplemented('Cookie Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Cookie Notice</span> for more information.
           </div>
-
         </div>
       </main>
     </div>

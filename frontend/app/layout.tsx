@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { KeyboardShortcutsProvider } from '@/context/KeyboardShortcutsContext';
 
 export const metadata: Metadata = {
   title: 'Amazon Route 53 Console',
@@ -37,7 +38,9 @@ export default function RootLayout({
         <AuthProvider>
           <NotificationProvider>
             <ThemeProvider>
-              {children}
+              <KeyboardShortcutsProvider>
+                {children}
+              </KeyboardShortcutsProvider>
             </ThemeProvider>
           </NotificationProvider>
         </AuthProvider>

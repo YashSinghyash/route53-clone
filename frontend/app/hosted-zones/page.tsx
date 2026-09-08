@@ -16,6 +16,7 @@ import HostedZoneModal from '@/components/HostedZoneModal';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import { HostedZone, PaginatedResponse, apiFetch } from '@/lib/api';
 import { useNotification } from '@/context/NotificationContext';
+import { useKeyboardShortcuts } from '@/context/KeyboardShortcutsContext';
 
 export default function HostedZonesPage() {
   const router = useRouter();
@@ -34,6 +35,39 @@ export default function HostedZonesPage() {
   const [deletingZone, setDeletingZone] = useState<HostedZone | null>(null);
 
   const { addNotification } = useNotification();
+
+  const selectedZone = selectedItems[0] || null;
+
+  useKeyboardShortcuts({
+    onCreate: () => {
+      router.push('/hosted-zones/create');
+    },
+    onEdit: () => {
+      if (selectedZone) {
+        setEditingZone(selectedZone);
+      }
+    },
+    onDelete: () => {
+      if (selectedZone) {
+        setDeletingZone(selectedZone);
+      }
+    },
+    onEscape: () => {
+      if (editingZone) {
+        setEditingZone(null);
+        return true;
+      }
+      if (deletingZone) {
+        setDeletingZone(null);
+        return true;
+      }
+      if (filterText) {
+        setFilterText('');
+        return true;
+      }
+      return false;
+    },
+  });
 
   const fetchZones = useCallback(async () => {
     setIsLoading(true);
@@ -125,7 +159,6 @@ export default function HostedZonesPage() {
     }
   };
 
-  const selectedZone = selectedItems[0] || null;
   const pagesCount = Math.ceil(totalCount / pageSize) || 1;
 
   return (

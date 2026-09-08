@@ -21,6 +21,7 @@ import RecordModal from '@/components/RecordModal';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import { DnsRecord, HostedZone, PaginatedResponse, apiFetch } from '@/lib/api';
 import { useNotification } from '@/context/NotificationContext';
+import { useKeyboardShortcuts } from '@/context/KeyboardShortcutsContext';
 
 const TYPE_FILTER_OPTIONS: SelectProps.Option[] = [
   { label: 'All record types', value: '' },
@@ -68,6 +69,57 @@ export default function ZoneRecordsPage() {
   const [importError, setImportError] = useState<string | null>(null);
 
   const { addNotification } = useNotification();
+
+  const isSingleSelected = selectedItems.length === 1;
+  const selectedRecord = isSingleSelected ? selectedItems[0] : null;
+
+  useKeyboardShortcuts({
+    onCreate: () => {
+      if (zone) setIsCreateModalOpen(true);
+    },
+    onEdit: () => {
+      if (isSingleSelected && selectedRecord) {
+        setEditingRecord(selectedRecord);
+      }
+    },
+    onDelete: () => {
+      if (selectedItems.length >= 2) {
+        setIsBulkDeleteModalOpen(true);
+      } else if (isSingleSelected && selectedRecord) {
+        setDeletingRecord(selectedRecord);
+      }
+    },
+    onEscape: () => {
+      if (isCreateModalOpen) {
+        setIsCreateModalOpen(false);
+        return true;
+      }
+      if (editingRecord) {
+        setEditingRecord(null);
+        return true;
+      }
+      if (deletingRecord) {
+        setDeletingRecord(null);
+        return true;
+      }
+      if (isBulkDeleteModalOpen) {
+        setIsBulkDeleteModalOpen(false);
+        setBulkConfirmText('');
+        return true;
+      }
+      if (isImportModalOpen) {
+        setIsImportModalOpen(false);
+        setImportFiles([]);
+        setImportError(null);
+        return true;
+      }
+      if (filterText) {
+        setFilterText('');
+        return true;
+      }
+      return false;
+    },
+  });
 
   const fetchZone = useCallback(async () => {
     if (!zoneId) return;
@@ -253,9 +305,6 @@ export default function ZoneRecordsPage() {
       setIsImporting(false);
     }
   };
-
-  const isSingleSelected = selectedItems.length === 1;
-  const selectedRecord = isSingleSelected ? selectedItems[0] : null;
 
   const pagesCount = Math.ceil(totalCount / pageSize) || 1;
 

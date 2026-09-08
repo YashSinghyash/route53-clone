@@ -10,6 +10,7 @@ import Spinner from '@cloudscape-design/components/spinner';
 import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useKeyboardShortcuts } from '@/context/KeyboardShortcutsContext';
 
 interface ConsoleLayoutProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ function HeaderNav() {
   const { user, logout } = useAuth();
   const { addNotification } = useNotification();
   const { mode, toggleTheme } = useTheme();
+  const { openHelp, isMac } = useKeyboardShortcuts();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [globalMenuOpen, setGlobalMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -163,7 +165,7 @@ function HeaderNav() {
               fontFamily: 'monospace',
             }}
           >
-            [Option+S]
+            [{isMac ? '⌘K' : 'Ctrl+K'}]
           </span>
           <div
             onClick={(e) => {
@@ -306,10 +308,10 @@ function HeaderNav() {
         {/* Divider */}
         <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
 
-        {/* Help */}
+        {/* Help / Shortcuts */}
         <div
-          title="Help"
-          onClick={() => notifyNotImplemented('Help')}
+          title="Keyboard shortcuts (?)"
+          onClick={openHelp}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -317,6 +319,32 @@ function HeaderNav() {
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
+
+        {/* Keyboard Shortcuts Badge Icon (?) */}
+        <div
+          title="Keyboard shortcuts (?)"
+          onClick={openHelp}
+          style={{
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            border: '1px solid #414d5c',
+            color: '#d1d5db',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            backgroundColor: '#16191f',
+            fontFamily: 'monospace',
+          }}
+        >
+          ?
         </div>
 
         {/* Divider */}

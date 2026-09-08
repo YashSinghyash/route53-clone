@@ -90,3 +90,13 @@ def get_current_user(
         "role": payload.get("role"),
         "account_id": payload.get("account_id"),
     }
+
+
+def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
+    """Gate a route to Admin users only. 403 for any other role."""
+    if current_user.get("role") != "Admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This action requires Admin permissions.",
+        )
+    return current_user

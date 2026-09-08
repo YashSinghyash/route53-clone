@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
-from app.core.security import get_current_user
+from app.core.security import require_admin
 from app.db import get_db
 from app.schemas.dns_record import (
     BulkDeleteRequest,
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/records", tags=["records"])
 def bulk_delete_records(
     payload: BulkDeleteRequest,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     deleted = dns_record_service.bulk_delete_records(db, payload.record_ids)
     return BulkDeleteResponse(deleted_count=deleted)
@@ -29,7 +29,7 @@ def update_record(
     record_id: str,
     payload: DnsRecordUpdate,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     return dns_record_service.update_record(db, record_id, payload)
 
@@ -38,7 +38,7 @@ def update_record(
 def delete_record(
     record_id: str,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     dns_record_service.delete_record(db, record_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

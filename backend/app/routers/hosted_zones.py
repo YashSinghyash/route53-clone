@@ -13,7 +13,7 @@ from fastapi import (
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlalchemy.orm import Session
 
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_admin
 from app.db import get_db
 from app.schemas.common import PaginatedResponse
 from app.schemas.dns_record import (
@@ -44,7 +44,7 @@ def list_hosted_zones(
 def create_hosted_zone(
     payload: HostedZoneCreate,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     return hosted_zone_service.create_zone(db, payload)
 
@@ -93,7 +93,7 @@ async def import_hosted_zone(
     zone_id: str,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     raw = await file.read()
     try:
@@ -112,7 +112,7 @@ def update_hosted_zone(
     zone_id: str,
     payload: HostedZoneUpdate,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     return hosted_zone_service.update_zone(db, zone_id, payload)
 
@@ -121,7 +121,7 @@ def update_hosted_zone(
 def delete_hosted_zone(
     zone_id: str,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     hosted_zone_service.delete_zone(db, zone_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -151,6 +151,6 @@ def create_zone_record(
     zone_id: str,
     payload: DnsRecordCreate,
     db: Session = Depends(get_db),
-    _: dict = Depends(get_current_user),
+    _: dict = Depends(require_admin),
 ):
     return dns_record_service.create_record(db, zone_id, payload)

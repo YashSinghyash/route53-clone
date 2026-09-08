@@ -8,6 +8,7 @@ import Alert from '@cloudscape-design/components/alert';
 import Spinner from '@cloudscape-design/components/spinner';
 import Tiles from '@cloudscape-design/components/tiles';
 import Button from '@cloudscape-design/components/button';
+import Flashbar from '@cloudscape-design/components/flashbar';
 import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
 
@@ -18,7 +19,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated, isLoading } = useAuth();
-  const { addNotification } = useNotification();
+  const { addNotification, clearNotifications, notifications } = useNotification();
   const router = useRouter();
 
   const notifyNotImplemented = (_itemName?: string) => {
@@ -28,11 +29,27 @@ export default function LoginPage() {
     });
   };
 
+  const handleSignUpClick = () => {
+    addNotification({
+      type: 'info',
+      content: "Sign up isn't available in this demo — use the Admin or ReadOnly credentials above to sign in.",
+    });
+  };
+
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.push('/hosted-zones');
     }
   }, [isLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('autofill') === 'admin') {
+        fillAdminCredentials();
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -42,6 +59,7 @@ export default function LoginPage() {
     }
 
     setError(null);
+    clearNotifications();
     setIsSubmitting(true);
     try {
       await login(username, password);
@@ -183,6 +201,12 @@ export default function LoginPage() {
             <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#16191f', margin: '0 0 4px 0' }}>Sign In</h1>
             <p style={{ fontSize: '13px', color: '#545b64', margin: '0 0 20px 0' }}>Access your AWS account by user credentials.</p>
 
+            {notifications.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <Flashbar items={notifications} />
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               {error && (
                 <Alert type="error" dismissible onDismiss={() => setError(null)}>
@@ -240,7 +264,7 @@ export default function LoginPage() {
                 />
               </FormField>
 
-              <div style={{ marginTop: '6px' }}>
+              <div style={{ marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -265,6 +289,36 @@ export default function LoginPage() {
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ec7211')}
                 >
                   {isSubmitting ? <Spinner size="normal" /> : 'Sign in'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSignUpClick}
+                  style={{
+                    width: '100%',
+                    height: '38px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid rgb(0, 108, 224)',
+                    borderRadius: '20px',
+                    color: 'rgb(0, 108, 224)',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background-color 0.15s ease, border-color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 108, 224, 0.05)';
+                    e.currentTarget.style.borderColor = 'rgb(0, 108, 224)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ffffff';
+                    e.currentTarget.style.borderColor = 'rgb(0, 108, 224)';
+                  }}
+                >
+                  New to AWS? Sign up
                 </button>
               </div>
             </form>

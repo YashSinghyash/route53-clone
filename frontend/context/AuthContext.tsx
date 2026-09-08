@@ -6,6 +6,8 @@ import { User, getToken, setToken, removeToken, apiFetch, LoginResponse, MeRespo
 
 interface AuthContextType {
   user: User | null;
+  role: string | null;
+  isReadOnly: boolean;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -21,8 +23,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
 
+  const role = user?.role || null;
+  const isReadOnly = role === 'ReadOnly';
+
   const logout = useCallback(() => {
     removeToken();
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('read_only_modal_shown');
+    }
     setTokenState(null);
     setUser(null);
     router.push('/login');
@@ -64,6 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        role,
+        isReadOnly,
         token,
         isAuthenticated: !!user,
         isLoading,

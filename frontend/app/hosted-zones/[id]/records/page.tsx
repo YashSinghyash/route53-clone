@@ -22,6 +22,7 @@ import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import { DnsRecord, HostedZone, PaginatedResponse, apiFetch } from '@/lib/api';
 import { useNotification } from '@/context/NotificationContext';
 import { useKeyboardShortcuts } from '@/context/KeyboardShortcutsContext';
+import { useAuth } from '@/context/AuthContext';
 
 const TYPE_FILTER_OPTIONS: SelectProps.Option[] = [
   { label: 'All record types', value: '' },
@@ -39,6 +40,7 @@ const TYPE_FILTER_OPTIONS: SelectProps.Option[] = [
 export default function ZoneRecordsPage() {
   const params = useParams();
   const zoneId = params?.id as string;
+  const { isReadOnly } = useAuth();
 
   const [zone, setZone] = useState<HostedZone | null>(null);
   const [records, setRecords] = useState<DnsRecord[]>([]);
@@ -75,18 +77,20 @@ export default function ZoneRecordsPage() {
 
   useKeyboardShortcuts({
     onCreate: () => {
-      if (zone) setIsCreateModalOpen(true);
+      if (!isReadOnly && zone) setIsCreateModalOpen(true);
     },
     onEdit: () => {
-      if (isSingleSelected && selectedRecord) {
+      if (!isReadOnly && isSingleSelected && selectedRecord) {
         setEditingRecord(selectedRecord);
       }
     },
     onDelete: () => {
-      if (selectedItems.length >= 2) {
-        setIsBulkDeleteModalOpen(true);
-      } else if (isSingleSelected && selectedRecord) {
-        setDeletingRecord(selectedRecord);
+      if (!isReadOnly) {
+        if (selectedItems.length >= 2) {
+          setIsBulkDeleteModalOpen(true);
+        } else if (isSingleSelected && selectedRecord) {
+          setDeletingRecord(selectedRecord);
+        }
       }
     },
     onEscape: () => {
@@ -363,32 +367,38 @@ export default function ZoneRecordsPage() {
                 <SpaceBetween direction="horizontal" size="xs">
                   {selectedItems.length >= 2 && (
                     <Button
+                      disabled={isReadOnly}
+                      disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                       onClick={() => setIsBulkDeleteModalOpen(true)}
                     >
                       Delete selected ({selectedItems.length})
                     </Button>
                   )}
                   <Button
-                    disabled={!isSingleSelected}
+                    disabled={isReadOnly || !isSingleSelected}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => setEditingRecord(selectedRecord)}
                   >
                     Edit record
                   </Button>
                   <Button
-                    disabled={!isSingleSelected}
+                    disabled={isReadOnly || !isSingleSelected}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => setDeletingRecord(selectedRecord)}
                   >
                     Delete record
                   </Button>
                   <Button
-                    disabled={!zone}
+                    disabled={isReadOnly || !zone}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => setIsImportModalOpen(true)}
                   >
                     Import records
                   </Button>
                   <Button
                     variant="primary"
-                    disabled={!zone}
+                    disabled={isReadOnly || !zone}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => setIsCreateModalOpen(true)}
                   >
                     Create record
@@ -434,7 +444,12 @@ export default function ZoneRecordsPage() {
                   Create a record to route traffic for your domain.
                 </Box>
                 {zone && (
-                  <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+                  <Button
+                    variant="primary"
+                    disabled={isReadOnly}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
+                    onClick={() => setIsCreateModalOpen(true)}
+                  >
                     Create record
                   </Button>
                 )}

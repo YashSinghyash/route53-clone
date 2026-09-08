@@ -92,7 +92,7 @@ export async function apiFetch<T>(
   }
 
   if (!response.ok) {
-    let errorMessage = `HTTP Error ${response.status}`;
+    let errorMessage = response.status === 403 ? 'This action requires Admin permissions.' : `HTTP Error ${response.status}`;
     try {
       const errorData = await response.json();
       if (errorData.detail) {
@@ -101,6 +101,8 @@ export async function apiFetch<T>(
         } else if (Array.isArray(errorData.detail)) {
           errorMessage = errorData.detail.map((e: { msg?: string }) => e.msg || 'Validation error').join(', ');
         }
+      } else if (errorData.message && typeof errorData.message === 'string') {
+        errorMessage = errorData.message;
       }
     } catch {
       // Use default error string if JSON parsing fails

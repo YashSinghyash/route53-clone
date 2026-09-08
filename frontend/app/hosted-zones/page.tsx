@@ -17,9 +17,11 @@ import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import { HostedZone, PaginatedResponse, apiFetch } from '@/lib/api';
 import { useNotification } from '@/context/NotificationContext';
 import { useKeyboardShortcuts } from '@/context/KeyboardShortcutsContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function HostedZonesPage() {
   const router = useRouter();
+  const { isReadOnly } = useAuth();
   const [zones, setZones] = useState<HostedZone[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -40,15 +42,15 @@ export default function HostedZonesPage() {
 
   useKeyboardShortcuts({
     onCreate: () => {
-      router.push('/hosted-zones/create');
+      if (!isReadOnly) router.push('/hosted-zones/create');
     },
     onEdit: () => {
-      if (selectedZone) {
+      if (!isReadOnly && selectedZone) {
         setEditingZone(selectedZone);
       }
     },
     onDelete: () => {
-      if (selectedZone) {
+      if (!isReadOnly && selectedZone) {
         setDeletingZone(selectedZone);
       }
     },
@@ -259,19 +261,23 @@ export default function HostedZonesPage() {
                     Export
                   </ButtonDropdown>
                   <Button
-                    disabled={!selectedZone}
+                    disabled={isReadOnly || !selectedZone}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => setEditingZone(selectedZone)}
                   >
                     Edit
                   </Button>
                   <Button
-                    disabled={!selectedZone}
+                    disabled={isReadOnly || !selectedZone}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => setDeletingZone(selectedZone)}
                   >
                     Delete
                   </Button>
                   <Button
                     variant="primary"
+                    disabled={isReadOnly}
+                    disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
                     onClick={() => router.push('/hosted-zones/create')}
                   >
                     Create hosted zone
@@ -309,7 +315,12 @@ export default function HostedZonesPage() {
                 <Box variant="p" color="inherit">
                   There are no hosted zones created for this account.
                 </Box>
-                <Button variant="primary" onClick={() => router.push('/hosted-zones/create')}>
+                <Button
+                  variant="primary"
+                  disabled={isReadOnly}
+                  disabledReason={isReadOnly ? 'Requires Admin permissions.' : undefined}
+                  onClick={() => router.push('/hosted-zones/create')}
+                >
                   Create hosted zone
                 </Button>
               </SpaceBetween>

@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useKeyboardShortcuts } from '@/context/KeyboardShortcutsContext';
+import ReadOnlyModal from '@/components/ReadOnlyModal';
 
 interface ConsoleLayoutProps {
   children: ReactNode;
@@ -655,6 +656,7 @@ export default function ConsoleLayout({
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '28px' }}>
+      <ReadOnlyModal />
       <HeaderNav />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <AppLayout

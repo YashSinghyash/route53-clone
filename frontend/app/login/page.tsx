@@ -2,17 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Form from '@cloudscape-design/components/form';
-import Container from '@cloudscape-design/components/container';
-import Header from '@cloudscape-design/components/header';
 import FormField from '@cloudscape-design/components/form-field';
 import Input from '@cloudscape-design/components/input';
-import Button from '@cloudscape-design/components/button';
-import SpaceBetween from '@cloudscape-design/components/space-between';
 import Alert from '@cloudscape-design/components/alert';
-import Box from '@cloudscape-design/components/box';
 import Spinner from '@cloudscape-design/components/spinner';
-import TopNavigation from '@cloudscape-design/components/top-navigation';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
@@ -51,9 +44,21 @@ export default function LoginPage() {
     }
   };
 
+  const fillAdminCredentials = () => {
+    setUsername('yash');
+    setPassword('password123');
+    setError(null);
+  };
+
+  const fillReadOnlyCredentials = () => {
+    setUsername('guest');
+    setPassword('guestpass');
+    setError(null);
+  };
+
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f2f3f3' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff' }}>
         <Spinner size="large" />
       </div>
     );
@@ -64,76 +69,268 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f2f3f3', display: 'flex', flexDirection: 'column' }}>
-      <TopNavigation
-        identity={{
-          href: '/login',
-          title: 'Amazon Route 53',
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflowX: 'hidden',
+        fontFamily: '"Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif',
+      }}
+    >
+      {/* Background Isometric Cube Watermarks */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '-20px',
+          top: '15%',
+          pointerEvents: 'none',
+          zIndex: 0,
         }}
-        utilities={[]}
-      />
-      <Box padding={{ top: 'xxxl', bottom: 'xxxl' }}>
-        <div style={{ maxWidth: '460px', margin: '40px auto 0 auto', padding: '0 16px' }}>
-          <form onSubmit={handleSubmit}>
-            <Form
-              actions={
-                <SpaceBetween direction="horizontal" size="xs">
-                  <Button
-                    variant="primary"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    formAction="none"
-                    onClick={() => handleSubmit()}
-                  >
-                    Sign in
-                  </Button>
-                </SpaceBetween>
-              }
-              header={
-                <Header
-                  variant="h1"
-                  description="Enter your IAM user credentials to access Amazon Route 53 Management Console."
-                >
-                  Sign in
-                </Header>
-              }
+      >
+        <svg width="260" height="300" viewBox="0 0 240 280" fill="none" opacity="0.08" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 0L120 35V105L60 70V0Z" fill="#D5DBDB" stroke="#879596" />
+          <path d="M60 0L0 35V105L60 70V0Z" fill="#EAECEE" stroke="#879596" />
+          <path d="M60 70L120 105L60 140L0 105L60 70Z" fill="#BDC3C7" stroke="#879596" />
+          <path d="M180 70L240 105V175L180 140V70Z" fill="#D5DBDB" stroke="#879596" />
+          <path d="M180 70L120 105V175L180 140V70Z" fill="#EAECEE" stroke="#879596" />
+          <path d="M180 140L240 175L180 210L120 175L180 140Z" fill="#BDC3C7" stroke="#879596" />
+          <path d="M60 140L120 175V245L60 210V140Z" fill="#D5DBDB" stroke="#879596" />
+          <path d="M60 140L0 175V245L60 210V140Z" fill="#EAECEE" stroke="#879596" />
+          <path d="M60 210L120 245L60 280L0 245L60 210Z" fill="#BDC3C7" stroke="#879596" />
+        </svg>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          right: '-20px',
+          bottom: '10%',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      >
+        <svg width="260" height="300" viewBox="0 0 240 280" fill="none" opacity="0.08" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 0L120 35V105L60 70V0Z" fill="#D5DBDB" stroke="#879596" />
+          <path d="M60 0L0 35V105L60 70V0Z" fill="#EAECEE" stroke="#879596" />
+          <path d="M60 70L120 105L60 140L0 105L60 70Z" fill="#BDC3C7" stroke="#879596" />
+          <path d="M180 70L240 105V175L180 140V70Z" fill="#D5DBDB" stroke="#879596" />
+          <path d="M180 70L120 105V175L180 140V70Z" fill="#EAECEE" stroke="#879596" />
+          <path d="M180 140L240 175L180 210L120 175L180 140Z" fill="#BDC3C7" stroke="#879596" />
+          <path d="M60 140L120 175V245L60 210V140Z" fill="#D5DBDB" stroke="#879596" />
+          <path d="M60 140L0 175V245L60 210V140Z" fill="#EAECEE" stroke="#879596" />
+          <path d="M60 210L120 245L60 280L0 245L60 210Z" fill="#BDC3C7" stroke="#879596" />
+        </svg>
+      </div>
+
+      {/* Top Header Utilities Bar */}
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '24px',
+          padding: '14px 28px',
+          fontSize: '12px',
+          color: '#0972d3',
+          zIndex: 1,
+        }}
+      >
+        <span style={{ cursor: 'pointer' }}>Provide feedback</span>
+        <span style={{ color: '#16191f', cursor: 'pointer' }}>
+          Multi-session disabled <span style={{ fontSize: '9px' }}>▼</span>
+        </span>
+        <span style={{ color: '#16191f', cursor: 'pointer' }}>
+          English <span style={{ fontSize: '9px' }}>▼</span>
+        </span>
+      </header>
+
+      {/* Centered Logo */}
+      <div style={{ textAlign: 'center', margin: '10px 0 30px 0', zIndex: 1 }}>
+        <img
+          src="/aws-login-logo.png"
+          alt="AWS Logo"
+          style={{ width: '72px', height: 'auto', display: 'inline-block' }}
+        />
+      </div>
+
+      {/* Main Form & Demo Card Split Container */}
+      <main style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '0 20px 40px 20px', zIndex: 1 }}>
+        <div style={{ display: 'flex', gap: '28px', maxWidth: '860px', width: '100%', alignItems: 'stretch' }}>
+          
+          {/* LEFT SIDE: Sign In Card */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1px solid #d5dbdb',
+                borderRadius: '8px',
+                padding: '32px 36px',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+                flex: 1,
+              }}
             >
-              <SpaceBetween size="l">
+              <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#16191f', margin: '0 0 4px 0' }}>Sign In</h1>
+              <p style={{ fontSize: '13px', color: '#545b64', margin: '0 0 24px 0' }}>Access your AWS account by user credentials.</p>
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 {error && (
                   <Alert type="error" dismissible onDismiss={() => setError(null)}>
                     {error}
                   </Alert>
                 )}
-                <Container header={<Header variant="h2">AWS Account Credentials</Header>}>
-                  <SpaceBetween size="m">
-                    <FormField label="Username" description="IAM user or account administrator name">
-                      <Input
-                        value={username}
-                        onChange={({ detail }) => setUsername(detail.value)}
-                        placeholder="e.g. yash"
-                        autoComplete={false}
-                      />
-                    </FormField>
-                    <FormField label="Password">
-                      <Input
-                        type="password"
-                        value={password}
-                        onChange={({ detail }) => setPassword(detail.value)}
-                        placeholder="Enter your password"
-                      />
-                    </FormField>
-                  </SpaceBetween>
-                </Container>
-              </SpaceBetween>
-            </Form>
-          </form>
-          <div style={{ marginTop: '20px' }}>
-            <Alert type="info">
-              Demo credentials — Admin: <strong>yash</strong> / <strong>password123</strong> &nbsp;·&nbsp; ReadOnly: <strong>guest</strong> / <strong>guestpass</strong>
-            </Alert>
+
+                <FormField label="Username">
+                  <Input
+                    value={username}
+                    onChange={({ detail }) => setUsername(detail.value)}
+                    placeholder="Enter your username"
+                  />
+                </FormField>
+
+                <FormField label="Password">
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={({ detail }) => setPassword(detail.value)}
+                    placeholder="Enter your password"
+                  />
+                </FormField>
+
+                <div style={{ marginTop: '10px' }}>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    style={{
+                      width: '100%',
+                      height: '38px',
+                      backgroundColor: '#ec7211',
+                      backgroundImage: 'linear-gradient(to bottom, #ff9900, #ec7211)',
+                      border: '1px solid #d58200',
+                      borderRadius: '20px',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      transition: 'background-color 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#eb5f07')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ec7211')}
+                  >
+                    {isSubmitting ? <Spinner size="normal" /> : 'Sign in'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Muted Footer Agreement below Left Card */}
+            <div style={{ marginTop: '16px', fontSize: '11px', color: '#545b64', lineHeight: '1.4', textAlign: 'left' }}>
+              By continuing, you agree to the <span style={{ color: '#0972d3', cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span style={{ color: '#0972d3', cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span style={{ color: '#0972d3', cursor: 'pointer' }}>Cookie Notice</span> for more information.
+            </div>
           </div>
+
+          {/* RIGHT SIDE: Demo Credentials Dark Card (replaces Lightsail promo banner) */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div
+              style={{
+                backgroundColor: '#0f1b2a',
+                border: '1px solid #2e3846',
+                borderRadius: '8px',
+                padding: '28px 32px',
+                color: '#ffffff',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                flex: 1,
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', margin: 0 }}>Demo Credentials</h2>
+                  <span style={{ fontSize: '10px', backgroundColor: '#1d2c3f', color: '#38bdf8', padding: '2px 8px', borderRadius: '10px', border: '1px solid #334155', fontWeight: 600 }}>
+                    MOCKED AUTH
+                  </span>
+                </div>
+                <p style={{ fontSize: '12px', color: '#9ba7b6', margin: '0 0 20px 0', lineHeight: '1.4' }}>
+                  Use these pre-configured assignment credentials to evaluate admin & read-only console capabilities:
+                </p>
+
+                {/* Admin Box */}
+                <div style={{ backgroundColor: '#162232', border: '1px solid #334155', borderRadius: '6px', padding: '14px', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 700, backgroundColor: '#ec7211', color: '#ffffff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                      Admin Role
+                    </span>
+                    <button
+                      onClick={fillAdminCredentials}
+                      style={{
+                        background: '#1d2c3f',
+                        border: '1px solid #384556',
+                        color: '#38bdf8',
+                        fontSize: '11px',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#23354d')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1d2c3f')}
+                    >
+                      Auto-fill Admin
+                    </button>
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#e2e8f0', fontFamily: 'monospace' }}>
+                    <div><strong>Username:</strong> yash</div>
+                    <div><strong>Password:</strong> password123</div>
+                  </div>
+                </div>
+
+                {/* ReadOnly Box */}
+                <div style={{ backgroundColor: '#162232', border: '1px solid #334155', borderRadius: '6px', padding: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 700, backgroundColor: '#0972d3', color: '#ffffff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                      ReadOnly Role
+                    </span>
+                    <button
+                      onClick={fillReadOnlyCredentials}
+                      style={{
+                        background: '#1d2c3f',
+                        border: '1px solid #384556',
+                        color: '#38bdf8',
+                        fontSize: '11px',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#23354d')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1d2c3f')}
+                    >
+                      Auto-fill ReadOnly
+                    </button>
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#e2e8f0', fontFamily: 'monospace' }}>
+                    <div><strong>Username:</strong> guest</div>
+                    <div><strong>Password:</strong> guestpass</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '20px', borderTop: '1px solid #1e293b', paddingTop: '12px' }}>
+                💡 Click any &quot;Auto-fill&quot; button to instantly populate the sign-in form.
+              </div>
+            </div>
+          </div>
+
         </div>
-      </Box>
+      </main>
     </div>
   );
 }

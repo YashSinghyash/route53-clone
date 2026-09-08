@@ -65,16 +65,11 @@ function HeaderNav() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         {/* AWS Logo */}
         <a href="/hosted-zones" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <svg width="38" height="22" viewBox="0 0 35 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M12.3 8.3c-1.6 0-2.8.7-2.8 1.8 0 1.4 2 1.8 3.6 2.2 2.4.5 5.6 1.3 5.6 5 0 3.5-3.1 6-7.4 6-4.2 0-7.6-2.3-8.2-6.2l3.5-.7c.4 2.2 2.4 3.7 4.6 3.7 2.1 0 3.7-1.1 3.7-2.6 0-1.7-2.2-2.1-4-2.5-2.5-.6-5.2-1.4-5.2-4.7 0-3.1 2.7-5.5 6.6-5.5 3.4 0 6.3 1.8 6.9 5.3l-3.4.6c-.4-1.9-1.9-3.1-3.5-3.1zM26.2 5.5l-4.5 17.5h-3.3l-3.3-12.7-3.3 12.7h-3.3L4.1 5.5h3.6l2.8 12.7 3.3-12.7h3.3l3.3 12.7 2.8-12.7h3z"
-              fill="#FFFFFF"
-            />
-            <path
-              d="M4.5 20.5c7.5 3.2 17.6 4.2 25.8 1 1.3-.5 2.7.3 2 1.4-3.1 4.2-11.8 6.8-21.9 4.2-2.9-.7-4.7-3.5-5.9-6.6z"
-              fill="#FF9900"
-            />
-          </svg>
+          <img
+            src="/aws-header-logo.png"
+            alt="AWS Logo"
+            style={{ width: '38px', height: '22px', display: 'block' }}
+          />
         </a>
 
         {/* Divider */}

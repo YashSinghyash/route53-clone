@@ -1,7 +1,7 @@
 # Route53 Clone
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.128-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python)](https://www.python.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)](https://sqlite.org/)
@@ -45,7 +45,7 @@ A functional clone of the AWS Route53 console — hosted zones and DNS records m
 ### Prerequisites
 
 - Python 3.9+
-- Node.js 18+
+- Node.js 20+ (Next.js 16 requires Node 20 or later)
 - npm
 
 ### Backend

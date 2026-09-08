@@ -5,6 +5,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from typing import List
+
 from app.models import DnsRecord, HostedZone
 from app.schemas.dns_record import DnsRecordCreate, DnsRecordUpdate
 from app.services.hosted_zone_service import _get_or_404, recount_records
@@ -144,3 +146,33 @@ def delete_record(db: Session, record_id: str) -> None:
     if zone is not None:
         recount_records(db, zone)
     db.commit()
+
+
+def bulk_delete_records(db: Session, record_ids: List[str]) -> int:
+    """Delete every existing record in ``record_ids`` in one transaction.
+
+    Unknown IDs are skipped silently. Each affected zone's ``record_count`` is
+    recomputed from the surviving rows.
+    """
+    unique_ids = list(dict.fromkeys(record_ids or []))
+    if not unique_ids:
+        return 0
+
+    records = db.execute(
+        select(DnsRecord).where(DnsRecord.id.in_(unique_ids))
+    ).scalars().all()
+    if not records:
+        return 0
+
+    affected_zone_ids = {r.zone_id for r in records}
+    for rec in records:
+        db.delete(rec)
+    db.flush()
+
+    for zone_id in affected_zone_ids:
+        zone = db.get(HostedZone, zone_id)
+        if zone is not None:
+            recount_records(db, zone)
+
+    db.commit()
+    return len(records)

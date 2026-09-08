@@ -107,6 +107,117 @@ def delete_zone(db: Session, zone_id: str) -> None:
     db.commit()
 
 
+def export_zone(db: Session, zone_id: str) -> dict:
+    """Build a portable JSON document of a zone plus all its DNS records."""
+    zone = _get_or_404(db, zone_id)
+    records = db.execute(
+        select(DnsRecord)
+        .where(DnsRecord.zone_id == zone_id)
+        .order_by(DnsRecord.name.asc(), DnsRecord.type.asc())
+    ).scalars().all()
+    return {
+        "name": zone.name,
+        "comment": zone.comment or "",
+        "private_zone": bool(zone.private_zone),
+        "hosted_zone_id": zone.id,
+        "records": [
+            {"name": r.name, "type": r.type, "ttl": r.ttl, "value": r.value}
+            for r in records
+        ],
+    }
+
+
+def _short_name(record_name: str, origin: str) -> str:
+    """Render a record name relative to the zone origin (apex -> '@')."""
+    name = (record_name or "").rstrip(".")
+    origin = origin.rstrip(".")
+    if name == origin or name == "":
+        return "@"
+    if name.endswith("." + origin):
+        return name[: -(len(origin) + 1)]
+    return name
+
+
+def _quote_txt(value: str) -> str:
+    v = value.strip()
+    if v.startswith('"') and v.endswith('"'):
+        return v
+    return '"' + v.replace('"', '\\"') + '"'
+
+
+def export_zone_bind(db: Session, zone_id: str) -> str:
+    """Render the zone and its records as a BIND-format zone file."""
+    zone = _get_or_404(db, zone_id)
+    records = db.execute(
+        select(DnsRecord)
+        .where(DnsRecord.zone_id == zone_id)
+        .order_by(DnsRecord.name.asc(), DnsRecord.type.asc())
+    ).scalars().all()
+
+    origin = zone.name.rstrip(".") + "."
+
+    # Default $TTL: the most common TTL among records, else 300.
+    if records:
+        counts: dict = {}
+        for r in records:
+            counts[r.ttl] = counts.get(r.ttl, 0) + 1
+        default_ttl = max(counts, key=lambda t: (counts[t], -t))
+    else:
+        default_ttl = 300
+
+    lines = [f"$ORIGIN {origin}", f"$TTL {default_ttl}", ""]
+    for r in records:
+        name = _short_name(r.name, origin)
+        value = _quote_txt(r.value) if r.type == "TXT" else r.value
+        ttl_col = "" if r.ttl == default_ttl else f"{r.ttl} "
+        lines.append(f"{name:<15} {ttl_col}IN  {r.type:<6} {value}")
+
+    return "\n".join(lines) + "\n"
+
+
+def import_zone_bind(db: Session, zone_id: str, text: str) -> dict:
+    """Parse a BIND zone file and create each record via ``create_record`` so
+    all normal validation and CNAME-conflict rules apply.
+
+    Returns ``{"imported_count": N, "skipped": [{"line", "reason"}, ...]}``.
+    Malformed or rejected lines are collected, never fatal.
+    """
+    from app.services import dns_record_service  # local import avoids a cycle
+    from app.services.bind_parser import parse_bind_zone
+    from app.schemas.dns_record import DnsRecordCreate
+
+    zone = _get_or_404(db, zone_id)
+    parsed, skipped = parse_bind_zone(text, zone.name)
+    skipped_out = [{"line": s.line, "reason": s.reason} for s in skipped]
+
+    imported = 0
+    for rec in parsed:
+        try:
+            payload = DnsRecordCreate(
+                name=rec.name, type=rec.type, value=rec.value, ttl=rec.ttl
+            )
+            dns_record_service.create_record(db, zone_id, payload)
+            imported += 1
+        except HTTPException as exc:
+            db.rollback()
+            skipped_out.append(
+                {
+                    "line": f"{rec.name} {rec.ttl} IN {rec.type} {rec.value}",
+                    "reason": str(exc.detail),
+                }
+            )
+        except Exception as exc:  # pragma: no cover - defensive
+            db.rollback()
+            skipped_out.append(
+                {
+                    "line": f"{rec.name} {rec.ttl} IN {rec.type} {rec.value}",
+                    "reason": f"unexpected error: {exc}",
+                }
+            )
+
+    return {"imported_count": imported, "skipped": skipped_out}
+
+
 def recount_records(db: Session, zone: HostedZone) -> None:
     total = db.execute(
         select(func.count()).select_from(DnsRecord).where(DnsRecord.zone_id == zone.id)

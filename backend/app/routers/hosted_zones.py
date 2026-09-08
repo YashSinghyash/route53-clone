@@ -1,12 +1,27 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
+from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlalchemy.orm import Session
 
 from app.core.security import get_current_user
 from app.db import get_db
 from app.schemas.common import PaginatedResponse
-from app.schemas.dns_record import DnsRecordCreate, DnsRecordOut
+from app.schemas.dns_record import (
+    DnsRecordCreate,
+    DnsRecordOut,
+    ZoneExport,
+    ZoneImportResponse,
+)
 from app.schemas.hosted_zone import HostedZoneCreate, HostedZoneOut, HostedZoneUpdate
 from app.services import dns_record_service, hosted_zone_service
 
@@ -41,6 +56,55 @@ def get_hosted_zone(
     _: dict = Depends(get_current_user),
 ):
     return hosted_zone_service.get_zone(db, zone_id)
+
+
+@router.get("/{zone_id}/export", response_model=ZoneExport)
+def export_hosted_zone(
+    zone_id: str,
+    format: str = Query("json"),
+    db: Session = Depends(get_db),
+    _: dict = Depends(get_current_user),
+):
+    fmt = format.lower()
+    if fmt not in ("json", "bind"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Supported formats: json, bind",
+        )
+
+    if fmt == "bind":
+        text = hosted_zone_service.export_zone_bind(db, zone_id)
+        zone = hosted_zone_service.get_zone(db, zone_id)
+        filename = f"{zone.name}.zone"
+        return PlainTextResponse(
+            content=text,
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    doc = hosted_zone_service.export_zone(db, zone_id)
+    filename = f"{doc['name']}.json"
+    return JSONResponse(
+        content=doc,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.post("/{zone_id}/import", response_model=ZoneImportResponse)
+async def import_hosted_zone(
+    zone_id: str,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    _: dict = Depends(get_current_user),
+):
+    raw = await file.read()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw.decode("utf-8", errors="replace")
+    if not text.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Uploaded file is empty"
+        )
+    return hosted_zone_service.import_zone_bind(db, zone_id, text)
 
 
 @router.put("/{zone_id}", response_model=HostedZoneOut)

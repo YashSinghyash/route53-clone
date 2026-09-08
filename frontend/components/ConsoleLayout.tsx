@@ -9,6 +9,7 @@ import Flashbar from '@cloudscape-design/components/flashbar';
 import Spinner from '@cloudscape-design/components/spinner';
 import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
+import { useTheme } from '@/context/ThemeContext';
 
 interface ConsoleLayoutProps {
   children: ReactNode;
@@ -18,9 +19,18 @@ interface ConsoleLayoutProps {
 
 function HeaderNav() {
   const { user, logout } = useAuth();
+  const { addNotification } = useNotification();
+  const { mode, toggleTheme } = useTheme();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [globalMenuOpen, setGlobalMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const notifyNotImplemented = (_itemName?: string) => {
+    addNotification({
+      type: 'info',
+      content: 'Coming soon',
+    });
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -77,6 +87,7 @@ function HeaderNav() {
 
         {/* Colorful App / Builder ID Icon */}
         <div
+          onClick={() => notifyNotImplemented('AWS Builder ID')}
           style={{
             width: '24px',
             height: '24px',
@@ -102,6 +113,7 @@ function HeaderNav() {
         {/* 3x3 Grid Icon */}
         <div
           title="Console Home / Services"
+          onClick={() => notifyNotImplemented('Console Home')}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 3.5px)',
@@ -119,6 +131,7 @@ function HeaderNav() {
       {/* Search Input Box */}
       <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1, maxWidth: '560px', margin: '0 16px' }}>
         <div
+          onClick={() => notifyNotImplemented('Search')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -131,6 +144,7 @@ function HeaderNav() {
             fontSize: '14px',
             gap: '10px',
             height: '30px',
+            cursor: 'pointer',
           }}
         >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -152,6 +166,10 @@ function HeaderNav() {
             [Option+S]
           </span>
           <div
+            onClick={(e) => {
+              e.stopPropagation();
+              notifyNotImplemented('Ask Amazon Q');
+            }}
             style={{
               fontSize: '12px',
               backgroundColor: '#111d2e',
@@ -251,6 +269,7 @@ function HeaderNav() {
         {/* CloudShell button */}
         <div
           title="CloudShell"
+          onClick={() => notifyNotImplemented('CloudShell')}
           style={{
             border: '1px solid #414d5c',
             borderRadius: '4px',
@@ -273,7 +292,11 @@ function HeaderNav() {
         <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
 
         {/* Notification Bell */}
-        <div title="Notifications" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+        <div
+          title="Notifications"
+          onClick={() => notifyNotImplemented('Notifications')}
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+        >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -284,7 +307,11 @@ function HeaderNav() {
         <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
 
         {/* Help */}
-        <div title="Help" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+        <div
+          title="Help"
+          onClick={() => notifyNotImplemented('Help')}
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+        >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -296,11 +323,43 @@ function HeaderNav() {
         <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
 
         {/* Settings */}
-        <div title="Settings" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+        <div
+          title="Settings"
+          onClick={() => notifyNotImplemented('Settings')}
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+        >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: '1px', height: '18px', backgroundColor: '#384556' }} />
+
+        {/* Theme Toggle (Sun / Moon) */}
+        <div
+          title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          onClick={toggleTheme}
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+        >
+          {mode === 'dark' ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          )}
         </div>
 
         {/* Divider */}
@@ -354,6 +413,15 @@ function HeaderNav() {
 }
 
 function FooterNav() {
+  const { addNotification } = useNotification();
+
+  const notifyNotImplemented = (_itemName?: string) => {
+    addNotification({
+      type: 'info',
+      content: 'Coming soon',
+    });
+  };
+
   return (
     <footer
       className="aws-header-nav"
@@ -382,7 +450,10 @@ function FooterNav() {
         {/* CloudShell */}
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('CloudShell');
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -415,7 +486,10 @@ function FooterNav() {
         {/* Agent Toolkit for AWS */}
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('Agent Toolkit for AWS');
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -438,7 +512,10 @@ function FooterNav() {
         {/* Feedback */}
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('Feedback');
+          }}
           style={{
             color: '#d1d5db',
             textDecoration: 'none',
@@ -453,7 +530,10 @@ function FooterNav() {
         {/* Console Mobile App */}
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('Console Mobile App');
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -478,7 +558,10 @@ function FooterNav() {
         <span>© 2026, Amazon Web Services, Inc. or its affiliates.</span>
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('Privacy');
+          }}
           style={{ color: '#d1d5db', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1d5db')}
@@ -487,7 +570,10 @@ function FooterNav() {
         </a>
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('Terms');
+          }}
           style={{ color: '#d1d5db', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1d5db')}
@@ -496,7 +582,10 @@ function FooterNav() {
         </a>
         <a
           href="#"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            notifyNotImplemented('Cookie preferences');
+          }}
           style={{ color: '#d1d5db', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#d1d5db')}

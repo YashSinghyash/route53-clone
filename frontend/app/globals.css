@@ -1,19 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');
 
 :root {
+  --awsui-font-family-base: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+  --awsui-font-family-body: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+  --font-family-base: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
   --color-background-button-primary-default: #ec7211;
   --color-background-button-primary-hover: #eb5f07;
   --color-background-button-primary-active: #dd5200;
   --color-border-button-primary-default: #ec7211;
 }
 
-.aws-header-nav,
-.aws-header-nav button,
-.aws-header-nav input,
-.aws-header-nav span,
-.aws-header-nav div,
-.aws-header-nav a {
+html,
+body,
+button,
+input,
+select,
+textarea,
+div,
+span,
+p,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+[class*="awsui_"] {
   font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif !important;
+}
+
+h1,
+[class*="awsui_header_"] [class*="awsui_heading_"],
+[class*="awsui_variant-h1_"] {
+  font: 700 18px / 22px "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif !important;
 }
 
 /* Override Cloudscape primary buttons to AWS Signature Orange */

@@ -8,6 +8,7 @@ import TextFilter from '@cloudscape-design/components/text-filter';
 import Pagination from '@cloudscape-design/components/pagination';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Button from '@cloudscape-design/components/button';
+import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
 import Box from '@cloudscape-design/components/box';
 import LinkComponent from '@cloudscape-design/components/link';
 import ConsoleLayout from '@/components/ConsoleLayout';
@@ -86,6 +87,42 @@ export default function HostedZonesPage() {
       content: `Successfully deleted hosted zone ${targetName}.`,
     });
     fetchZones();
+  };
+
+  const handleExport = async (zone: HostedZone, format: 'json' | 'bind') => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch(`/api/hosted-zones/${zone.id}/export?format=${format}`, {
+        headers,
+      });
+      if (!res.ok) {
+        throw new Error(`Export failed with status ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = format === 'bind' ? `${zone.name}.zone` : `${zone.name}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      addNotification({
+        type: 'success',
+        content: `Successfully exported ${zone.name} as ${format.toUpperCase()}.`,
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        addNotification({
+          type: 'error',
+          content: err.message || 'Failed to export zone.',
+        });
+      }
+    }
   };
 
   const selectedZone = selectedItems[0] || null;
@@ -174,6 +211,20 @@ export default function HostedZonesPage() {
                   >
                     View details
                   </Button>
+                  <ButtonDropdown
+                    disabled={!selectedZone}
+                    items={[
+                      { id: 'json', text: 'Export as JSON' },
+                      { id: 'bind', text: 'Export as BIND zone file' },
+                    ]}
+                    onItemClick={({ detail }) => {
+                      if (selectedZone) {
+                        handleExport(selectedZone, detail.id as 'json' | 'bind');
+                      }
+                    }}
+                  >
+                    Export
+                  </ButtonDropdown>
                   <Button
                     disabled={!selectedZone}
                     onClick={() => setEditingZone(selectedZone)}

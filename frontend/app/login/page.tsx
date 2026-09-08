@@ -7,6 +7,7 @@ import Input from '@cloudscape-design/components/input';
 import Alert from '@cloudscape-design/components/alert';
 import Spinner from '@cloudscape-design/components/spinner';
 import { useAuth } from '@/context/AuthContext';
+import { useNotification } from '@/context/NotificationContext';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -14,7 +15,15 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated, isLoading } = useAuth();
+  const { addNotification } = useNotification();
   const router = useRouter();
+
+  const notifyNotImplemented = (_itemName?: string) => {
+    addNotification({
+      type: 'info',
+      content: 'Coming soon',
+    });
+  };
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -138,11 +147,11 @@ export default function LoginPage() {
           zIndex: 1,
         }}
       >
-        <span style={{ cursor: 'pointer' }}>Provide feedback</span>
-        <span style={{ color: '#16191f', cursor: 'pointer' }}>
+        <span onClick={() => notifyNotImplemented('Provide feedback')} style={{ cursor: 'pointer' }}>Provide feedback</span>
+        <span onClick={() => notifyNotImplemented('Multi-session options')} style={{ color: '#16191f', cursor: 'pointer' }}>
           Multi-session disabled <span style={{ fontSize: '9px' }}>▼</span>
         </span>
-        <span style={{ color: '#16191f', cursor: 'pointer' }}>
+        <span onClick={() => notifyNotImplemented('Language selector')} style={{ color: '#16191f', cursor: 'pointer' }}>
           English <span style={{ fontSize: '9px' }}>▼</span>
         </span>
       </header>
@@ -231,7 +240,7 @@ export default function LoginPage() {
 
             {/* Muted Footer Agreement below Left Card */}
             <div style={{ marginTop: '16px', fontSize: '11px', color: '#545b64', lineHeight: '1.4', textAlign: 'left' }}>
-              By continuing, you agree to the <span style={{ color: '#0972d3', cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span style={{ color: '#0972d3', cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span style={{ color: '#0972d3', cursor: 'pointer' }}>Cookie Notice</span> for more information.
+              By continuing, you agree to the <span onClick={() => notifyNotImplemented('AWS Customer Agreement')} style={{ color: '#0972d3', cursor: 'pointer' }}>AWS Customer Agreement</span> or other agreement for AWS services, and the <span onClick={() => notifyNotImplemented('Privacy Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Privacy Notice</span>. This site uses essential cookies. See our <span onClick={() => notifyNotImplemented('Cookie Notice')} style={{ color: '#0972d3', cursor: 'pointer' }}>Cookie Notice</span> for more information.
             </div>
           </div>
 

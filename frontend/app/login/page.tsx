@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [highlightDemoTiles, setHighlightDemoTiles] = useState(false);
   const { login, isAuthenticated, isLoading } = useAuth();
   const { addNotification, clearNotifications, notifications } = useNotification();
   const router = useRouter();
@@ -34,6 +35,13 @@ export default function LoginPage() {
       type: 'info',
       content: "Sign up isn't available in this demo — use the Admin or ReadOnly credentials above to sign in.",
     });
+  };
+
+  const triggerDemoHighlight = () => {
+    setHighlightDemoTiles(true);
+    setTimeout(() => {
+      setHighlightDemoTiles(false);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -55,6 +63,7 @@ export default function LoginPage() {
     if (e) e.preventDefault();
     if (!username || !password) {
       setError('Please enter both username and password.');
+      triggerDemoHighlight();
       return;
     }
 
@@ -78,12 +87,14 @@ export default function LoginPage() {
     setUsername('yash');
     setPassword('password123');
     setError(null);
+    setHighlightDemoTiles(false);
   };
 
   const fillReadOnlyCredentials = () => {
     setUsername('guest');
     setPassword('guestpass');
     setError(null);
+    setHighlightDemoTiles(false);
   };
 
   if (isLoading) {
@@ -242,26 +253,38 @@ export default function LoginPage() {
 
               {/* Demo Accounts Quick-Select Tiles */}
               <FormField label="Demo accounts:">
-                <Tiles
-                  columns={2}
-                  value={username === 'yash' ? 'admin' : username === 'guest' ? 'readonly' : null}
-                  onChange={({ detail }) => {
-                    if (detail.value === 'admin') fillAdminCredentials();
-                    if (detail.value === 'readonly') fillReadOnlyCredentials();
+                <div
+                  style={{
+                    borderRadius: '8px',
+                    padding: '2px',
+                    transition: 'all 0.3s ease-in-out',
+                    boxShadow: highlightDemoTiles
+                      ? '0 0 0 3px rgba(9, 114, 211, 0.4), 0 2px 10px rgba(9, 114, 211, 0.25)'
+                      : 'none',
+                    border: highlightDemoTiles ? '1px solid #0972d3' : '1px solid transparent',
                   }}
-                  items={[
-                    {
-                      value: 'admin',
-                      label: 'Admin',
-                      description: 'yash / full access',
-                    },
-                    {
-                      value: 'readonly',
-                      label: 'ReadOnly',
-                      description: 'guest / view only',
-                    },
-                  ]}
-                />
+                >
+                  <Tiles
+                    columns={2}
+                    value={username === 'yash' ? 'admin' : username === 'guest' ? 'readonly' : null}
+                    onChange={({ detail }) => {
+                      if (detail.value === 'admin') fillAdminCredentials();
+                      if (detail.value === 'readonly') fillReadOnlyCredentials();
+                    }}
+                    items={[
+                      {
+                        value: 'admin',
+                        label: 'Admin',
+                        description: 'yash / full access',
+                      },
+                      {
+                        value: 'readonly',
+                        label: 'ReadOnly',
+                        description: 'guest / view only',
+                      },
+                    ]}
+                  />
+                </div>
               </FormField>
 
               <div style={{ marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
